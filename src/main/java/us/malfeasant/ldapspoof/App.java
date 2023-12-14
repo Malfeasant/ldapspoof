@@ -3,6 +3,8 @@ package us.malfeasant.ldapspoof;
 import org.tinylog.Logger;
 
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,6 +19,7 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
     private static int LDAP_PORT = 389;
+    private final ObjectProperty<Listen> listener = new SimpleObjectProperty<>();
 
     @Override
     public void start(Stage stage) {
@@ -30,14 +33,17 @@ public class App extends Application {
         }));
 
         var button = new Button("Listen");
+        button.disableProperty().bind(listener.isNotNull());
+        portField.disableProperty().bind(listener.isNotNull());
         button.setOnAction(e -> {
             try {
-                var listen = new Listen(
+                listener.set(new Listen(
                     portField.getText().equals("") ? 0 :
                     Integer.parseInt(portField.getText())
-                );
-                button.disableProperty().bind(listen.isRunning);
+                ));
+                portField.textProperty().bind(listener.get().portProperty.asString());
             } catch (NumberFormatException e1) {
+                // This shouldn't happen with the TextFormatter, but just in case...
                 Logger.error(e1, "Non-number entered in port field.");
             }
         });
