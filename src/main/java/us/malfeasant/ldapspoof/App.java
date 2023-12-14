@@ -3,10 +3,12 @@ package us.malfeasant.ldapspoof;
 import org.tinylog.Logger;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -15,14 +17,23 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
     private static int LDAP_PORT = 389;
+
     @Override
     public void start(Stage stage) {
         var portLabel = new Label("Port:");
+        
         var portField = new TextField(Integer.toString(LDAP_PORT));
+        portField.setMaxWidth(50);
+        portField.setTextFormatter(new TextFormatter<>(change -> {
+            // accept only digits
+            return change.getText().matches("\\d*") ? change : null;
+        }));
+
         var button = new Button("Listen");
         button.setOnAction(e -> {
             try {
                 var listen = new Listen(
+                    portField.getText().equals("") ? LDAP_PORT :
                     Integer.parseInt(portField.getText())
                 );
                 button.disableProperty().bind(listen.isRunning);
@@ -30,8 +41,13 @@ public class App extends Application {
                 Logger.error(e1, "Non-number entered in port field.");
             }
         });
+
         var layout = new GridPane();
         layout.addRow(0, portLabel, portField, button);
+        layout.setVgap(5);
+        layout.setHgap(5);
+        layout.setPadding(new Insets(5));
+        
         var scene = new Scene(layout);
         stage.setScene(scene);
         stage.show();
