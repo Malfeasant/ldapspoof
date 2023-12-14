@@ -10,7 +10,9 @@ public class Listen {
     public final ReadOnlyBooleanProperty isRunning;
 
     public Listen(int port) {
-        if (port < 1) throw new IllegalArgumentException("port must be positive");
+        // Port 0 means auto-select a random port, so we should have some way
+        // of getting that back to the UI...
+        if (port < 0) throw new IllegalArgumentException("port must be positive");
         this.port = port;
         running = new ReadOnlyBooleanWrapper(true);
         isRunning = running.getReadOnlyProperty();

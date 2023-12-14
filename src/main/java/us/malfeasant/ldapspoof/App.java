@@ -33,7 +33,7 @@ public class App extends Application {
         button.setOnAction(e -> {
             try {
                 var listen = new Listen(
-                    portField.getText().equals("") ? LDAP_PORT :
+                    portField.getText().equals("") ? 0 :
                     Integer.parseInt(portField.getText())
                 );
                 button.disableProperty().bind(listen.isRunning);
