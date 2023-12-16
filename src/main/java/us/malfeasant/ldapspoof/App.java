@@ -1,5 +1,7 @@
 package us.malfeasant.ldapspoof;
 
+import java.io.IOException;
+
 import org.tinylog.Logger;
 
 import javafx.application.Application;
@@ -45,6 +47,10 @@ public class App extends Application {
             } catch (NumberFormatException e1) {
                 // This shouldn't happen with the TextFormatter, but just in case...
                 Logger.error(e1, "Non-number entered in port field.");
+            } catch (IOException e1) {
+                // TODO Something went wrong opening socket...
+                // what to do depends on what can go wrong...
+                e1.printStackTrace();
             }
         });
 
