@@ -2,6 +2,7 @@ package us.malfeasant.ldapspoof;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -28,20 +29,33 @@ public class Listen {
             new InetSocketAddress(port));
         channel.accept(null, new CompletionHandler<AsynchronousSocketChannel,Void>() {
             @Override
-            public void completed(AsynchronousSocketChannel ch, Void att) {
+            public void completed(AsynchronousSocketChannel connection, Void att) {
                 // accept the next connection
                 channel.accept(null, this);
 
                 try {
-                    Logger.info("Accepted connection from {}", ch.getRemoteAddress());
+                    Logger.info("Accepted connection from {}", connection.getRemoteAddress());
+                    var bb = ByteBuffer.allocate(0x1000);
+                    connection.read(bb, null, new CompletionHandler<Integer,Void>() {
+                        @Override
+                        public void completed(Integer result, Void attachment) {
+                            Logger.debug("Received {} bytes.", result);
+                        }
+                        @Override
+                        public void failed(Throwable exc, Void attachment) {
+                            Logger.error("Problem acceptin response!\n{}", exc);
+                        }
+                    });
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    // Not sure what would cause this, just log for now.
+                    Logger.error("Problem reading channel!\n{}", e);
                 }
             }
 
             @Override
             public void failed(Throwable exc, Void attachment) {
+                // Not sure what would cause this, just log for now.
+                Logger.error("Problem accepting connection!\n{}", exc);
             }
         });
     }
