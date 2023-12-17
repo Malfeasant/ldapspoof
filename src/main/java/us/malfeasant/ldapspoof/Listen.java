@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.charset.StandardCharsets;
 
 import org.tinylog.Logger;
 
@@ -40,6 +41,8 @@ public class Listen {
                         @Override
                         public void completed(Integer result, Void attachment) {
                             Logger.debug("Received {} bytes.", result);
+                            Logger.info("{}", StandardCharsets.UTF_8
+                                .decode(bb));   // but this just gets a blank line...
                         }
                         @Override
                         public void failed(Throwable exc, Void attachment) {
