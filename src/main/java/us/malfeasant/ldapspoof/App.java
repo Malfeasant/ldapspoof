@@ -37,20 +37,20 @@ public class App extends Application {
         var button = new Button("Listen");
         button.disableProperty().bind(listener.isNotNull());
         portField.disableProperty().bind(listener.isNotNull());
-        button.setOnAction(e -> {
+        button.setOnAction(event -> {
             try {
                 listener.set(new Listen(
                     portField.getText().equals("") ? 0 :
                     Integer.parseInt(portField.getText())
                 ));
                 portField.textProperty().bind(listener.get().portProperty.asString());
-            } catch (NumberFormatException e1) {
+            } catch (NumberFormatException ex) {
                 // This shouldn't happen with the TextFormatter, but just in case...
-                Logger.error(e1, "Non-number entered in port field.");
-            } catch (IOException e1) {
+                Logger.error(ex, "Non-number entered in port field.");
+            } catch (IOException ex) {
                 // TODO Something went wrong opening socket...
                 // what to do depends on what can go wrong...
-                e1.printStackTrace();
+                Logger.error(ex);
             }
         });
 
