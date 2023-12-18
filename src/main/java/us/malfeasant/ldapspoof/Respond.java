@@ -31,6 +31,9 @@ public class Respond implements CompletionHandler<Integer, Void> {
         Logger.debug("{}", StandardCharsets.UTF_8.decode(buffer));
         // 0 signifies success right?
         channel.write(ByteBuffer.wrap("0\n".getBytes(StandardCharsets.UTF_8)));
+        Logger.debug("Sent response...");
+        // read more?
+        channel.read(buffer, null, this);
     }
 
     @Override
